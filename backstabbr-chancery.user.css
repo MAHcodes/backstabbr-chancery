@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           Backstabbr – Chancery
 @namespace      backstabbr-chancery
-@version        1.8.1
+@version        1.8.2
 @description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
 @author         you
 @license        MIT
@@ -63,6 +63,7 @@
   body {
     background: var(--ink) !important;
     color: var(--text);
+    padding-top: 50px !important;
     -webkit-font-smoothing: antialiased;
   }
 
