@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           Backstabbr – Chancery
 @namespace      backstabbr-chancery
-@version        1.8.3
+@version        1.8.4
 @description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
 @author         you
 @license        MIT
@@ -86,12 +86,16 @@
   /* ──────────────────────────────────────────────
      3. Navbar
      ────────────────────────────────────────────── */
+  /* Compact navbar: tight paddings give a natural ~50px bar — no forced
+     height, so nothing overflows the 50px body padding. */
   .navbar.bg-primary {
     background: rgba(15, 19, 26, .9) !important;
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--line);
-    min-height: 58px;
+    padding: .25rem .4rem;
+    --bs-navbar-brand-font-size: 1.1rem;
+    --bs-nav-link-padding-y: .4rem;
   }
   .navbar-brand { font-weight: 600; color: var(--brass) !important; }
   .navbar-text { color: var(--text-faint) !important; font-size: .8rem; }
@@ -124,7 +128,7 @@
       flex: 1 1 0;
       min-width: 0;
       position: sticky;
-      top: 74px;
+      top: 50px;
     }
     #game-info-card .card-body {
       max-height: calc(100vh - 150px);
