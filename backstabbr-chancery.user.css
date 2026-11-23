@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           Backstabbr – Chancery
 @namespace      backstabbr-chancery
-@version        1.6.1
+@version        1.6.2
 @description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
 @author         you
 @license        MIT
@@ -467,9 +467,10 @@
   .time-remaining-string { color: var(--brass) !important; }
 
   /* Submit row: Update Orders + the deadline toggle share one line.
-     #orders is a two-column grid: button containers pair up on the first
-     row, everything else (prompt, orders list, dropdown) spans the width. */
-  #orders {
+     #orders is a tab pane: only lay it out as a grid while it is .active,
+     or the ID selector would outrank Bootstrap's display:none and leave an
+     invisible block on every other tab. */
+  #orders.active {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: .5rem;
@@ -656,7 +657,7 @@
     .order-buttons .btn i { margin: 0 0 .15rem; display: block; }
     .playerlist th { width: 7rem; }
     /* Narrow screens: stack the submit bar and deadline toggle again */
-    #orders { display: block; }
+    #orders.active { display: block; }
   }
 
   @media (prefers-reduced-motion: reduce) {
