@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           Backstabbr – Chancery
 @namespace      backstabbr-chancery
-@version        1.6.3
+@version        1.7.0
 @description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
 @author         you
 @license        MIT
@@ -466,41 +466,29 @@
   /* Next-adjudication countdown: Bootswatch primary would render it blue */
   .time-remaining-string { color: var(--brass) !important; }
 
-  /* Submit row: Update Orders + the deadline toggle share one line.
-     #orders is a tab pane: only lay it out as a grid while it is .active,
-     or the ID selector would outrank Bootstrap's display:none and leave an
-     invisible block on every other tab. */
-  #orders.active {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: .5rem;
+  /* Submit row. Real DOM: #orders > .btn-group.d-flex > form#orders_prompt,
+     and the form holds BOTH actions: button#submit_orders_button and the
+     label.btn with the #early_adjudication checkbox. Flex the form so the
+     pair splits the width 50/50 and stretches to equal height. */
+  #orders .btn-group { display: flex !important; width: 100%; margin-bottom: .8rem; }
+  #orders_prompt {
+    display: flex;
     align-items: stretch;
+    gap: .5rem;
+    width: 100%;
   }
-  #orders > * { grid-column: 1 / -1; }
-  /* A group holding only the submit button takes the whole row */
-  #orders > .btn-group:not(:has(.btn:not(#submit_orders_button))) { grid-column: 1 / -1; }
-  /* A group with company — or the toggle beside it — sits in the pair */
-  #orders > .btn-group { grid-column: 1; }
-  #orders > .btn-group + .btn-group,
-  #orders > .btn-group + .btn,
-  #orders > .btn-group + label,
-  #orders > .btn-group + div:not(#orders_prompt) { grid-column: 2; margin-bottom: .8rem; }
-  #orders .btn-group { display: flex !important; gap: .5rem; width: 100%; margin-bottom: .8rem; }
-  /* The pair fills its cells: same 50% width, same height */
-  #orders.active > .btn-group + .btn-group { height: 100%; }
-  #orders.active > .btn-group + .btn,
-  #orders.active > .btn-group + label,
-  #orders.active > .btn-group + .btn-group > .btn,
-  #orders.active > .btn-group + div:not(#orders_prompt) > .btn,
-  #orders.active > .btn-group + div:not(#orders_prompt) > label {
-    height: 100%;
+  #submit_orders_button,
+  #orders_prompt > label.btn {
+    flex: 1 1 0;
+    width: auto !important;
+    min-width: 0;
+    padding: .6rem 1rem;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     white-space: nowrap;
   }
-  #orders_prompt { width: 100%; }
-  #submit_orders_button { flex: 1 1 auto; width: auto !important; min-width: 0; padding: .6rem 1rem; font-weight: 600; }
 
   /* ──────────────────────────────────────────────
      11. Orders list
@@ -670,8 +658,9 @@
     .order-buttons .btn { min-height: 54px; line-height: 1.15; }
     .order-buttons .btn i { margin: 0 0 .15rem; display: block; }
     .playerlist th { width: 7rem; }
-    /* Narrow screens: stack the submit bar and deadline toggle again */
-    #orders.active { display: block; }
+    /* Narrow screens: let the pair wrap instead of overflowing */
+    #submit_orders_button,
+    #orders_prompt > label.btn { white-space: normal; }
   }
 
   @media (prefers-reduced-motion: reduce) {
