@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           Backstabbr – Chancery
 @namespace      backstabbr-chancery
-@version        1.5.2
+@version        1.5.3
 @description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
 @author         you
 @license        MIT
@@ -117,10 +117,12 @@
     }
     #content > .row > .col-lg { padding: 0; margin: 0; max-width: none; }
 
-    /* Map column: viewport-fitted, but never narrower than the legend needs */
+    /* Map column: viewport-fitted. No fixed width floor: a floor forces the
+       map taller than the height budget when zoomed in, pushing the footer
+       below the fold. --map-h's own 420px floor is the only safety net. */
     #content > .row > .col-lg:first-child {
       flex: 0 1 auto;
-      width: min(100%, max(760px, calc(var(--map-h) * var(--map-ratio) * var(--map-scale))));
+      width: min(100%, calc(var(--map-h) * var(--map-ratio) * var(--map-scale)));
     }
     #content > .row > .col-lg:last-child {
       flex: 1 1 460px;
