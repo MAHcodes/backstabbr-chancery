@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           Backstabbr – Chancery
 @namespace      backstabbr-chancery
-@version        1.6.0
+@version        1.6.1
 @description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
 @author         you
 @license        MIT
@@ -54,6 +54,9 @@
     --bs-link-color-rgb: 210, 169, 90;
     --bs-link-hover-color-rgb: 229, 194, 125;
     --bs-secondary-color: var(--text-dim);
+    /* Bootswatch's steel-blue primary leaks into .text-primary etc. */
+    --bs-primary: var(--brass);
+    --bs-primary-rgb: 210, 169, 90;
   }
 
   /* ──────────────────────────────────────────────
@@ -460,10 +463,29 @@
   .nav-tabs .nav-link.active::after { background: var(--brass); }
   #unsubmitted-orders-alert-icon { color: var(--brass) !important; margin-left: .25rem; }
 
-  /* Submit orders: one full-width action, no extra border */
-  #orders .btn-group { display: flex !important; width: 100%; margin-bottom: .8rem; }
+  /* Next-adjudication countdown: Bootswatch primary would render it blue */
+  .time-remaining-string { color: var(--brass) !important; }
+
+  /* Submit row: Update Orders + the deadline toggle share one line.
+     #orders is a two-column grid: button containers pair up on the first
+     row, everything else (prompt, orders list, dropdown) spans the width. */
+  #orders {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: .5rem;
+  }
+  #orders > * { grid-column: 1 / -1; }
+  /* A group holding only the submit button takes the whole row */
+  #orders > .btn-group:not(:has(.btn:not(#submit_orders_button))) { grid-column: 1 / -1; }
+  /* A group with company — or the toggle beside it — sits in the pair */
+  #orders > .btn-group { grid-column: 1; }
+  #orders > .btn-group + .btn-group,
+  #orders > .btn-group + .btn,
+  #orders > .btn-group + label,
+  #orders > .btn-group + div:not(#orders_prompt) { grid-column: 2; margin-bottom: .8rem; }
+  #orders .btn-group { display: flex !important; gap: .5rem; width: 100%; margin-bottom: .8rem; }
   #orders_prompt { width: 100%; }
-  #submit_orders_button { width: 100%; padding: .6rem 1rem; font-weight: 600; }
+  #submit_orders_button { flex: 1 1 auto; width: auto !important; min-width: 0; padding: .6rem 1rem; font-weight: 600; }
 
   /* ──────────────────────────────────────────────
      11. Orders list
@@ -633,6 +655,8 @@
     .order-buttons .btn { min-height: 54px; line-height: 1.15; }
     .order-buttons .btn i { margin: 0 0 .15rem; display: block; }
     .playerlist th { width: 7rem; }
+    /* Narrow screens: stack the submit bar and deadline toggle again */
+    #orders { display: block; }
   }
 
   @media (prefers-reduced-motion: reduce) {
