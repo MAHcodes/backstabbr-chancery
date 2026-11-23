@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           Backstabbr – Chancery
 @namespace      backstabbr-chancery
-@version        1.7.1
+@version        1.8.0
 @description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
 @author         you
 @license        MIT
@@ -44,10 +44,6 @@
     --r-md: 4px;
     --r-lg: 6px;
 
-    /* Height the map may use so map + legend + order bar fit one screen */
-    --map-h: max(420px, calc(100vh - 285px));
-    --map-ratio: 1.0893; /* 610 / 560 */
-
     --bs-body-bg: var(--ink);
     --bs-body-color: var(--text);
     --bs-border-color: var(--line);
@@ -80,7 +76,7 @@
   }
 
   #body-container {
-    max-width: 1680px;
+    max-width: none;
     margin-inline: auto;
     padding: .9rem 1.25rem 0;
   }
@@ -111,7 +107,6 @@
     #content > .row {
       display: flex;
       flex-wrap: nowrap;
-      justify-content: center;
       align-items: flex-start;
       gap: 1.5rem;
       margin: 0;
@@ -119,14 +114,14 @@
     }
     #content > .row > .col-lg { padding: 0; margin: 0; max-width: none; }
 
-    /* Map column: viewport-fitted, but never narrower than the legend needs */
+    /* Map and orders panel split the screen 50/50, like the site's own grid */
     #content > .row > .col-lg:first-child {
-      flex: 0 1 auto;
-      width: min(100%, max(850px, calc(var(--map-h) * var(--map-ratio))));
+      flex: 1 1 0;
+      min-width: 0;
     }
     #content > .row > .col-lg:last-child {
-      flex: 1 1 460px;
-      max-width: 620px;
+      flex: 1 1 0;
+      min-width: 0;
       position: sticky;
       top: 74px;
     }

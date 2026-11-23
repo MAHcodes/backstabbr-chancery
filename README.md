@@ -8,7 +8,7 @@ It is a userstyle: plain CSS that a browser extension applies to backstabbr.com.
 
 ## Features
 
-- **Map sized to your window.** The map, legend and order buttons fit on one screen, and the map stays centered next to the orders panel.
+- **Balanced 50/50 layout.** The map and the orders panel split the full width of the screen evenly, like the site's own grid, and the panel stays in view while you scroll.
 - **Calmer map colors.** The bright lavender sea and beige land are toned down so units, supply centers and labels stand out.
 - **Clearer units and labels.** Units get a light outline and shadow, and map labels have a soft halo.
 - **Legend chips.** Each power has a chip tinted with its own color. Army and Fleet are neutral chips drawn with CSS shapes.
