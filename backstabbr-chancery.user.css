@@ -1,7 +1,7 @@
 /* ==UserStyle==
 @name           Backstabbr – Chancery
 @namespace      backstabbr-chancery
-@version        1.8.2
+@version        1.8.3
 @description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
 @author         you
 @license        MIT
@@ -464,8 +464,8 @@
 
   /* Submit row. Real DOM: #orders > .btn-group.d-flex > form#orders_prompt,
      and the form holds BOTH actions: button#submit_orders_button and the
-     label.btn with the #early_adjudication checkbox. Flex the form so the
-     pair splits the width 50/50 and stretches to equal height. */
+     label.btn with the #early_adjudication checkbox. One row, natural
+     widths. */
   #orders .btn-group { display: flex !important; width: 100%; margin-bottom: .8rem; }
   #orders_prompt {
     display: flex;
@@ -475,9 +475,8 @@
   }
   #submit_orders_button,
   #orders_prompt > label.btn {
-    flex: 1 1 0;
+    flex: 0 0 auto;
     width: auto !important;
-    min-width: 0;
     padding: .6rem 1rem;
     font-weight: 600;
     display: inline-flex;
