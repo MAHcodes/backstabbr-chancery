@@ -1,0 +1,641 @@
+/* ==UserStyle==
+@name           Backstabbr – Chancery
+@namespace      backstabbr-chancery
+@version        1.5.0
+@description    A calmer, flatter redesign of Backstabbr: ink-blue surfaces, brass accents, a viewport-fitted map, a single-piece order bar and a sticky orders panel. Keeps the site's own fonts.
+@author         you
+@license        MIT
+==/UserStyle== */
+
+@-moz-document domain("backstabbr.com") {
+
+  /* ──────────────────────────────────────────────
+     1. Tokens
+     ────────────────────────────────────────────── */
+  :root {
+    --ink:      #0f131a;
+    --panel:    #161c25;
+    --panel-2:  #1d2430;
+    --panel-3:  #262f3d;
+    --line:     #2d3746;
+    --line-soft:#232b37;
+
+    --text:       #e8e4d8;
+    --text-dim:   #a3aab7;
+    --text-faint: #6f7886;
+
+    --brass:      #d2a95a;
+    --brass-hi:   #e5c27d;
+    --brass-ink:  #1b1507;
+    --brass-wash: rgba(210, 169, 90, .14);
+
+    --danger: #e58f8f;
+    --ok:     #6cc596;
+
+    --c-austria: #cc0000;
+    --c-england: #2a2ad0;
+    --c-france:  #9999ff;
+    --c-germany: #2b2b2b;
+    --c-italy:   #00aa00;
+    --c-russia:  #bb00bb;
+    --c-turkey:  #bbbb00;
+
+    --r-sm: 2px;
+    --r-md: 4px;
+    --r-lg: 6px;
+
+    /* Height the map may use so map + legend + order bar fit one screen */
+    --map-h: max(420px, calc(100vh - 285px));
+    --map-ratio: 1.0893; /* 610 / 560 */
+
+    --bs-body-bg: var(--ink);
+    --bs-body-color: var(--text);
+    --bs-border-color: var(--line);
+    --bs-link-color-rgb: 210, 169, 90;
+    --bs-link-hover-color-rgb: 229, 194, 125;
+    --bs-secondary-color: var(--text-dim);
+  }
+
+  /* ──────────────────────────────────────────────
+     2. Base
+     ────────────────────────────────────────────── */
+  html { color-scheme: dark; }
+
+  body {
+    background: var(--ink) !important;
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  * { scrollbar-width: thin; scrollbar-color: var(--panel-3) transparent; }
+  ::selection { background: var(--brass); color: var(--brass-ink); }
+
+  :focus-visible {
+    outline: 2px solid var(--brass) !important;
+    outline-offset: 2px;
+    box-shadow: none;
+  }
+
+  #body-container {
+    max-width: 1680px;
+    margin-inline: auto;
+    padding: .9rem 1.25rem 0;
+  }
+  #content.container-fluid { padding: 0; }
+
+  /* ──────────────────────────────────────────────
+     3. Navbar
+     ────────────────────────────────────────────── */
+  .navbar.bg-primary {
+    background: rgba(15, 19, 26, .9) !important;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    min-height: 58px;
+  }
+  .navbar-brand { font-weight: 600; color: var(--brass) !important; }
+  .navbar-text { color: var(--text-faint) !important; font-size: .8rem; }
+  .navbar .nav-link,
+  .navbar .text-light { color: var(--text-dim) !important; transition: color .15s; }
+  .navbar .nav-link:hover,
+  .navbar .text-light:hover { color: var(--text) !important; }
+  .navbar-toggler { border-color: var(--line); border-radius: var(--r-md); }
+
+  /* ──────────────────────────────────────────────
+     4. Layout: map | orders panel
+     ────────────────────────────────────────────── */
+  @media (min-width: 992px) {
+    #content > .row {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 1.5rem;
+      margin: 0;
+      --bs-gutter-x: 0;
+    }
+    #content > .row > .col-lg { padding: 0; margin: 0; max-width: none; }
+
+    /* Map column: viewport-fitted, but never narrower than the legend needs */
+    #content > .row > .col-lg:first-child {
+      flex: 0 1 auto;
+      width: min(100%, max(850px, calc(var(--map-h) * var(--map-ratio))));
+    }
+    #content > .row > .col-lg:last-child {
+      flex: 1 1 380px;
+      max-width: 500px;
+      position: sticky;
+      top: 74px;
+    }
+    #game-info-card .card-body {
+      max-height: calc(100vh - 150px);
+      overflow-y: auto;
+    }
+  }
+
+  /* ──────────────────────────────────────────────
+     5. Map (no outer frame: the map is the only box)
+     ────────────────────────────────────────────── */
+  #map_container {
+    container-type: inline-size;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
+  #map { line-height: 0; }
+  #map svg {
+    display: block;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 610 / 560;
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    overflow: hidden !important;
+  }
+
+  /* Tone the sea and land down so units and labels carry.
+     Delete this one rule to get the original map colours back. */
+  #map svg > image { filter: brightness(.85) saturate(.75) hue-rotate(-6deg); }
+
+  #map svg text {
+    font-weight: 500;
+    letter-spacing: .02em;
+    paint-order: stroke;
+    stroke: rgba(240, 236, 224, .5);
+    stroke-width: 2px;
+    stroke-linejoin: round;
+    pointer-events: none;
+  }
+
+  #map svg [id^="map_unit_"] {
+    fill-opacity: .92 !important;
+    stroke: rgba(255, 255, 255, .9);
+    stroke-width: 1.25px;
+    filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, .55));
+  }
+  #map svg rect[width="6"] { rx: 1px; stroke: rgba(0, 0, 0, .7); }
+  #map svg circle[r="3"]   { stroke-width: 1.25px; }
+  #map svg path[stroke-width="0"] { cursor: pointer; }
+
+  /* Season switcher floated over the map */
+  #map-season { top: 12px !important; left: 12px !important; z-index: 5; }
+  #game-history-controls .btn {
+    background: rgba(15, 19, 26, .82);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 0;
+    border-left: 1px solid var(--line);
+    color: var(--text);
+    font-size: .78rem;
+    font-weight: 500;
+    text-transform: none;
+    border-radius: 0;
+  }
+  #game-history-controls .btn:first-child { border-left: 0; border-radius: var(--r-md) 0 0 var(--r-md); }
+  #game-history-controls .btn:last-child  { border-radius: 0 var(--r-md) var(--r-md) 0; }
+  #game-history-controls .btn:hover:not(.disabled) { background: var(--panel-3); color: #fff; }
+  #game-history-controls .btn.disabled { opacity: .35; }
+  #history_current_season { text-transform: capitalize; }
+
+  /* Tooltip */
+  #tooltip {
+    background: rgba(12, 15, 21, .96) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: var(--r-md) !important;
+    padding: .5rem .75rem !important;
+    font-size: .78rem;
+    line-height: 1.45;
+    pointer-events: none;
+    max-width: 240px;
+  }
+  #tooltip em { color: var(--text-dim); }
+
+  /* ──────────────────────────────────────────────
+     6. Legend – one chip per power, tinted with its colour
+     ────────────────────────────────────────────── */
+  #map_container .legend {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    justify-content: space-between;
+    align-items: center;
+    gap: .35rem !important;
+    margin: 0 !important;
+    padding: .7rem 0 .55rem;
+  }
+
+  #map_container .legend > span {
+    --chip: #8d939c;
+    display: flex !important;
+    align-items: center;
+    gap: .35rem !important;
+    height: 1.95rem;
+    min-width: 0;
+    padding: 0 .5rem 0 .45rem !important;
+    margin: 0 !important;
+    background: var(--panel-2) !important;
+    background: color-mix(in srgb, var(--chip) 13%, var(--panel)) !important;
+    border: 1px solid var(--line) !important;
+    border: 1px solid color-mix(in srgb, var(--chip) 38%, var(--line)) !important;
+    border-radius: var(--r-md);
+    box-shadow: none !important;
+    color: var(--text) !important;
+    font-size: .75rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: default;
+    transition: border-color .15s, background-color .15s;
+  }
+  #map_container .legend > span:hover {
+    border-color: color-mix(in srgb, var(--chip) 65%, var(--line)) !important;
+  }
+  #map_container .legend > span > div,
+  #map_container .legend > span > img { background: none !important; color: inherit; }
+
+  /* each chip takes its power's colour */
+  #map_container .legend > span:has(.Austria) { --chip: var(--c-austria); }
+  #map_container .legend > span:has(.England) { --chip: #5757e8; }
+  #map_container .legend > span:has(.France)  { --chip: var(--c-france); }
+  #map_container .legend > span:has(.Germany) { --chip: #8d939c; }
+  #map_container .legend > span:has(.Italy)   { --chip: var(--c-italy); }
+  #map_container .legend > span:has(.Russia)  { --chip: var(--c-russia); }
+  #map_container .legend > span:has(.Turkey)  { --chip: var(--c-turkey); }
+
+  /* Army / Fleet keys: neutral chips, drawn with CSS shapes */
+  #map_container .legend > span:nth-child(-n+2) {
+    color: var(--text-dim) !important;
+    background: var(--panel) !important;
+    border-color: var(--line) !important;
+  }
+  #map_container .legend > span:nth-child(2) { margin-right: .3rem !important; }
+  #map_container .legend > span:nth-child(-n+2) img { display: none; }
+  #map_container .legend > span:nth-child(-n+2)::before {
+    content: "";
+    width: .7rem; height: .7rem;
+    background: #9aa3b0;
+    flex: none;
+  }
+  #map_container .legend > span:nth-child(1)::before { border-radius: 50%; }
+  #map_container .legend > span:nth-child(2)::before { clip-path: polygon(0 10%, 100% 10%, 50% 100%); }
+
+  /* Narrow map column: wrap neatly instead of overflowing */
+  @container (max-width: 800px) {
+    #map_container .legend { flex-wrap: wrap !important; justify-content: center; }
+    #map_container .legend > span:nth-child(2) { margin-right: 0 !important; }
+  }
+
+  /* ──────────────────────────────────────────────
+     7. Power swatches
+     ────────────────────────────────────────────── */
+  .country-icon {
+    display: flex !important;
+    align-items: center;
+    flex: none;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+  }
+  .country-icon > i.fa-square {
+    display: block;
+    width: .75rem; height: .75rem;
+    margin: 0;
+    background: currentColor;
+    border-radius: var(--r-sm);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .22);
+    vertical-align: baseline;
+  }
+  .country-icon > i.fa-square::before { display: none; }
+
+  .country-icon.Austria { color: var(--c-austria) !important; }
+  .country-icon.England { color: var(--c-england) !important; }
+  .country-icon.France  { color: var(--c-france)  !important; }
+  .country-icon.Germany { color: var(--c-germany) !important; }
+  .country-icon.Italy   { color: var(--c-italy)   !important; }
+  .country-icon.Russia  { color: var(--c-russia)  !important; }
+  .country-icon.Turkey  { color: var(--c-turkey)  !important; }
+
+  /* ──────────────────────────────────────────────
+     8. Order bar – four separate buttons
+     ────────────────────────────────────────────── */
+  .order-buttons {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: .4rem;
+    margin-top: .3rem;
+    background: none;
+    border: 0;
+  }
+  .order-buttons .btn {
+    --bs-btn-bg: var(--panel);
+    --bs-btn-color: var(--text);
+    --bs-btn-border-color: var(--line);
+    --bs-btn-hover-bg: var(--panel-3);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-border-color: var(--brass);
+    --bs-btn-active-bg: var(--brass);
+    --bs-btn-active-color: var(--brass-ink);
+    --bs-btn-active-border-color: var(--brass);
+    --bs-btn-disabled-bg: var(--panel);
+    --bs-btn-disabled-color: var(--text-faint);
+    --bs-btn-disabled-border-color: var(--line-soft);
+    --bs-btn-disabled-opacity: 1;
+    width: auto !important;
+    min-height: 44px;
+    margin: 0 !important;
+    border: 1px solid var(--line) !important;
+    border-radius: var(--r-md) !important;
+    font-weight: 500;
+    font-size: .86rem;
+  }
+  .order-buttons .btn:disabled { border-color: var(--line-soft) !important; }
+  .order-buttons .btn:not(:disabled):hover { border-color: var(--brass) !important; }
+  .order-buttons .btn i { margin-right: .35rem; opacity: .85; }
+
+  /* ──────────────────────────────────────────────
+     9. Buttons, global
+     ────────────────────────────────────────────── */
+  .btn {
+    border-radius: var(--r-md);
+    font-weight: 500;
+    transition: background-color .15s, border-color .15s, color .15s;
+  }
+  .btn-primary {
+    --bs-btn-bg: var(--brass);
+    --bs-btn-border-color: var(--brass);
+    --bs-btn-color: var(--brass-ink);
+    --bs-btn-hover-bg: var(--brass-hi);
+    --bs-btn-hover-border-color: var(--brass-hi);
+    --bs-btn-hover-color: var(--brass-ink);
+    --bs-btn-active-bg: #bf9548;
+    --bs-btn-active-border-color: #bf9548;
+    --bs-btn-active-color: var(--brass-ink);
+    --bs-btn-disabled-bg: var(--panel-2);
+    --bs-btn-disabled-border-color: transparent;
+    --bs-btn-disabled-color: var(--text-faint);
+    --bs-btn-disabled-opacity: 1;
+  }
+  .btn-secondary,
+  .btn-outline-secondary {
+    --bs-btn-bg: var(--panel-2);
+    --bs-btn-color: var(--text);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-bg: var(--panel-3);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-bg: var(--panel-3);
+    --bs-btn-active-border-color: transparent;
+    --bs-btn-disabled-bg: var(--panel);
+    --bs-btn-disabled-color: var(--text-faint);
+    --bs-btn-disabled-border-color: transparent;
+    --bs-btn-disabled-opacity: 1;
+  }
+  .btn-outline-danger {
+    --bs-btn-color: var(--danger);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-bg: rgba(229, 143, 143, .14);
+    --bs-btn-hover-color: #ffb9b9;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-bg: rgba(229, 143, 143, .24);
+    --bs-btn-active-color: #ffd0d0;
+    --bs-btn-active-border-color: transparent;
+    background: rgba(229, 143, 143, .08);
+  }
+  .btn-outline-success {
+    --bs-btn-color: var(--ok);
+    --bs-btn-border-color: transparent;
+    --bs-btn-hover-bg: rgba(108, 197, 150, .14);
+    --bs-btn-hover-color: #a6e6c3;
+    --bs-btn-hover-border-color: transparent;
+    --bs-btn-active-bg: rgba(108, 197, 150, .24);
+    --bs-btn-active-color: #c6f2da;
+    --bs-btn-active-border-color: transparent;
+    background: rgba(108, 197, 150, .08);
+  }
+  .btn-close { filter: invert(1) grayscale(1) brightness(1.6); opacity: .6; }
+  .btn-close:hover { opacity: 1; }
+
+  /* ──────────────────────────────────────────────
+     10. Side panel (card + tabs)
+     ────────────────────────────────────────────── */
+  .card {
+    --bs-card-bg: var(--panel);
+    --bs-card-color: var(--text);
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--line) !important;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+  }
+  .card-header {
+    background: var(--panel) !important;
+    border-bottom: 1px solid var(--line);
+    padding: .25rem 1rem 0;
+  }
+  .card-header-tabs { margin: 0 -.5rem -1px !important; }
+  .card-body { padding: 1rem 1.1rem 1.1rem; }
+
+  /* Tabs: colour change on hover, a single brass line on the active tab */
+  .nav-tabs { border-bottom: 0; gap: .1rem; }
+  .nav-tabs .nav-link {
+    position: relative;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0;
+    color: var(--text-dim);
+    font-weight: 500;
+    font-size: .86rem;
+    padding: .65rem .8rem;
+    transition: color .15s;
+  }
+  .nav-tabs .nav-link::after {
+    content: "";
+    position: absolute;
+    left: .8rem; right: .8rem; bottom: 0;
+    height: 2px;
+    background: transparent;
+  }
+  .nav-tabs .nav-link:hover { color: var(--text); }
+  .nav-tabs .nav-link.active { color: var(--text); }
+  .nav-tabs .nav-link.active::after { background: var(--brass); }
+  #unsubmitted-orders-alert-icon { color: var(--brass) !important; margin-left: .25rem; }
+
+  /* Submit orders: one full-width action, no extra border */
+  #orders .btn-group { display: flex !important; width: 100%; margin-bottom: .8rem; }
+  #orders_prompt { width: 100%; }
+  #submit_orders_button { width: 100%; padding: .6rem 1rem; font-weight: 600; }
+
+  /* ──────────────────────────────────────────────
+     11. Orders list
+     ────────────────────────────────────────────── */
+  .playerlist { width: 100%; border-collapse: separate; border-spacing: 0; }
+  .playerlist th,
+  .playerlist td {
+    padding: .55rem 0;
+    vertical-align: top;
+    border: 0;
+    border-bottom: 1px solid var(--line-soft);
+    background: transparent;
+  }
+  .playerlist tr:last-child th,
+  .playerlist tr:last-child td { border-bottom: 0; }
+  .playerlist th { width: 8.5rem; font-weight: 400; padding-right: .75rem; }
+
+  .playerlist .country {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    height: 1.45rem;
+    font-style: normal;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.45rem;
+    color: var(--text);
+  }
+
+  /* Every line has identical padding, so highlighting never shifts the text.
+     The -0.6rem margin lets the text stay aligned with the column. */
+  .orderstring {
+    display: block !important;
+    width: fit-content;
+    min-width: 5.5rem;
+    margin: 0 0 0 -.6rem !important;
+    padding: 0 .6rem !important;
+    border-radius: var(--r-sm);
+    font-size: .82rem;
+    line-height: 1.45rem;
+    color: var(--text);
+    transition: background-color .12s;
+  }
+  .orderstring:hover { background: var(--panel-2); }
+  .orderstring.highlight_text_order {
+    background: var(--brass-wash);
+    color: var(--brass-hi);
+    box-shadow: none !important;
+  }
+  #hint { display: block; margin-top: .75rem; color: var(--text-dim); font-size: .85rem; }
+
+  /* ──────────────────────────────────────────────
+     12. Edit sandbox tab
+     ────────────────────────────────────────────── */
+  #edit-text td { padding: .8rem 0; }
+  .remove_unit,
+  .remove_supply_center {
+    --bs-btn-padding-y: .15rem;
+    --bs-btn-padding-x: .55rem;
+    font-size: .76rem;
+    border-radius: var(--r-sm);
+  }
+  .add_army, .add_fleet, .add_territory {
+    --bs-btn-padding-y: .2rem;
+    --bs-btn-padding-x: .65rem;
+    font-size: .78rem;
+  }
+  #edit-submit { width: 100%; }
+  #edit-submit:not(:disabled) {
+    background: var(--brass);
+    border-color: var(--brass);
+    color: var(--brass-ink);
+  }
+
+  /* ──────────────────────────────────────────────
+     13. Forms
+     ────────────────────────────────────────────── */
+  .form-control,
+  .form-select {
+    background-color: var(--ink);
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: var(--r-md);
+  }
+  .form-control::placeholder { color: var(--text-faint); }
+  .form-control:focus,
+  .form-select:focus {
+    background-color: var(--ink);
+    color: var(--text);
+    border-color: var(--brass);
+    box-shadow: 0 0 0 3px var(--brass-wash);
+  }
+  .form-check-input { background-color: var(--ink); border-color: var(--text-faint); border-radius: var(--r-sm); }
+  .form-check-input:checked { background-color: var(--brass); border-color: var(--brass); }
+  .form-check-input:focus { box-shadow: 0 0 0 3px var(--brass-wash); border-color: var(--brass); }
+  label, .form-check-label { color: var(--text); }
+  .form-text, .text-muted { color: var(--text-faint) !important; }
+
+  /* ──────────────────────────────────────────────
+     14. Tables, dropdowns, modals, alerts
+     ────────────────────────────────────────────── */
+  .table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text);
+    --bs-table-border-color: var(--line);
+    --bs-table-striped-bg: rgba(255, 255, 255, .025);
+    --bs-table-striped-color: var(--text);
+    --bs-table-hover-bg: rgba(255, 255, 255, .04);
+  }
+
+  .dropdown-menu {
+    --bs-dropdown-bg: var(--panel-2);
+    --bs-dropdown-color: var(--text);
+    --bs-dropdown-border-color: var(--line);
+    --bs-dropdown-link-color: var(--text);
+    --bs-dropdown-link-hover-bg: var(--panel-3);
+    --bs-dropdown-link-hover-color: #fff;
+    --bs-dropdown-link-active-bg: var(--brass-wash);
+    --bs-dropdown-link-active-color: var(--brass-hi);
+    --bs-dropdown-divider-bg: var(--line);
+    padding: .3rem;
+    border-radius: var(--r-lg);
+  }
+  .dropdown-item { border-radius: var(--r-md); padding: .4rem .7rem; }
+  .dropdown-item small,
+  span.dropdown-item { color: var(--text-dim); }
+
+  .modal-content {
+    background: var(--panel);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+  }
+  .modal-header,
+  .modal-footer { border-color: var(--line); }
+  .modal-backdrop { --bs-backdrop-bg: #05070a; --bs-backdrop-opacity: .72; }
+
+  .alert {
+    background: var(--panel-2);
+    color: var(--text);
+    border: 0;
+    border-left: 3px solid var(--brass);
+    border-radius: var(--r-md);
+  }
+  .alert-danger  { border-left-color: var(--danger); }
+  .alert-success { border-left-color: var(--ok); }
+  .alert a { color: var(--brass-hi); }
+
+  /* ──────────────────────────────────────────────
+     15. Footer
+     ────────────────────────────────────────────── */
+  .footer {
+    background: transparent !important;
+    border-top: 1px solid var(--line-soft);
+    margin-top: 1.25rem;
+    font-size: .76rem;
+  }
+  .footer .text-muted { color: var(--text-faint) !important; }
+  .footer a { color: var(--text-dim); text-decoration: none; }
+  .footer a:hover { color: var(--brass); text-decoration: underline; }
+
+  /* ──────────────────────────────────────────────
+     16. Small screens
+     ────────────────────────────────────────────── */
+  @media (max-width: 991.98px) {
+    #body-container { padding: .6rem .6rem 0; }
+    .order-buttons .btn { min-height: 54px; line-height: 1.15; }
+    .order-buttons .btn i { margin: 0 0 .15rem; display: block; }
+    .playerlist th { width: 7rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+}
