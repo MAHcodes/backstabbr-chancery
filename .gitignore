@@ -1,2 +1,3 @@
 # Saved pages from backstabbr.com contain session tokens — never commit them
 *.html
+*_files/
